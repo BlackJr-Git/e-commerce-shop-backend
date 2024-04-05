@@ -1,13 +1,13 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
   createUser,
   deleteAllUsers,
   deleteUser,
   getAllUsers,
   getOneUser,
   updateUser,
-  getOneUserByHandle
-} from "../controllers/userController.js";
+  getOneUserByHandle,
+} = require("../controllers/userController.js");
 
 const userRouter = Router();
 
@@ -32,4 +32,4 @@ userRouter.delete(`/delete/:userId`, deleteUser);
 //Delete all users
 userRouter.delete(`/delete`, deleteAllUsers);
 
-export default userRouter;
+module.exports = userRouter;

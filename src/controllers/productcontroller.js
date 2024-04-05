@@ -1,4 +1,4 @@
-import data from "../../assets/initial-data.json" assert { type: "json" };
+const data = require("../../assets/initial-data.json")
 // import data from "../../assets/data.json" assert { type: "json" };
 
 const userData = data.users;
@@ -127,22 +127,13 @@ async function deleteAllProducts(req, res, next) {
   return res.send("All Products have been deleted");
 }
 
-export {
-  createProduct,
-  deleteAllProducts,
-  getUserProducts,
-  deleteProduct,
-  getAllProducts,
-  getOneProduct,
-  updateProduct,
+module.exports = {
+  createProduct : createProduct,
+  deleteAllProducts : deleteAllProducts,
+  deleteProduct : deleteProduct,
+  getAllProducts: getAllProducts,
+  getOneProduct: getOneProduct,
+  updateProduct: updateProduct,
 };
 
-export default {
-  createProduct,
-  deleteAllProducts,
-  getUserProducts,
-  deleteProduct,
-  getAllProducts,
-  getOneProduct,
-  updateProduct,
-};
+

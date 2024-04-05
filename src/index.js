@@ -1,31 +1,30 @@
-import cors from "cors";
-// import dotenv from "dotenv";
-import express, { json } from "express";
-import fs from "fs";
-import {
+const cors = require("cors");
+const dotenv = require("dotenv");
+
+const express = require("express");
+const { json } = require("express");
+
+const {
   authBaseURI,
   rolesBaseURI,
   usersBaseURI,
   productBaseURI,
-} from "./config/paths.js";
+} = require("./config/paths.js");
 
-import {
+const {
   authRouter,
   roleRouter,
   userRouter,
   productRouter,
-} from "./routes/index.js";
+} = require("./routes/index.js");
 // import productRouter from "./routes/products.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const corsOptions = {
-  origin: [
-    `http://localhost:${PORT}`,"*"
-  ],
+  origin: [`http://localhost:${PORT}`, "*"],
 };
-// dotenv.config();
-
+dotenv.config();
 
 // Config
 app.use(json());

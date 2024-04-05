@@ -1,6 +1,5 @@
 // import data from "../../assets/initial-data.json" assert { type: "json" };
-import data from "../../assets/initial-data.json" assert { type: "json" };
-
+const data = require("../../assets/initial-data.json");
 
 let userData = data.users;
 function findUserById(id) {
@@ -116,22 +115,12 @@ async function deleteAllUsers(req, res, next) {
   return res.send("All Users have been deleted");
 }
 
-export {
-  createUser,
-  deleteAllUsers,
-  deleteUser,
-  getAllUsers,
-  getOneUser,
-  updateUser,
-  getOneUserByHandle
-};
-
-export default {
-  createUser,
-  deleteAllUsers,
-  deleteUser,
-  getAllUsers,
-  getOneUser,
-  updateUser,
-  getOneUserByHandle
+module.exports = {
+  createUser: createUser,
+  deleteAllUsers: deleteAllUsers,
+  deleteUser: deleteUser,
+  getAllUsers: getAllUsers,
+  getOneUser: getOneUser,
+  updateUser: updateUser,
+  getOneUserByHandle: getOneUserByHandle,
 };

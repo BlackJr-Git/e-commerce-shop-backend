@@ -1,12 +1,13 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+const {
   createProduct,
   deleteAllProducts,
   deleteProduct,
   getAllProducts,
   getOneProduct,
   updateProduct
-} from "../controllers/productcontroller.js";
+} = require("../controllers/productcontroller.js"
+)
 
 const productRouter = Router();
 
@@ -28,4 +29,4 @@ productRouter.delete(`/delete/:ProductId`, deleteProduct);
 //Delete all Products
 productRouter.delete(`/delete`, deleteAllProducts);
 
-export default productRouter;
+module.exports = productRouter;

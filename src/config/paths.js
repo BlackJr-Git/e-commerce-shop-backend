@@ -1,13 +1,11 @@
-export const authBaseURI = "/api/auth";
-export const usersBaseURI = "/api/users";
-export const rolesBaseURI = "/api/roles";
-export const productBaseURI = "/api/products";
+const authBaseURI = "/api/auth";
+const usersBaseURI = "/api/users";
+const rolesBaseURI = "/api/roles";
+const productBaseURI = "/api/products";
 
-const paths = {
+module.exports = {
   authBaseURI: authBaseURI,
   usersBaseURI: usersBaseURI,
   rolesBaseURI: rolesBaseURI,
-  productBaseURI : productBaseURI
+  productBaseURI: productBaseURI,
 };
-
-export default paths;
