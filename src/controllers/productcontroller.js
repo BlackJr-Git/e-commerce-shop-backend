@@ -1,15 +1,15 @@
-const data = require("../../assets/initial-data.json")
-// import data from "../../assets/data.json" assert { type: "json" };
+const data = require("../../assets/initial-data.json");
+const productsData = require("../../assets/products");
 
 const userData = data.users;
-const productsData = data.products;
+// const productsData = productsData ;
 
 function findProductById(id) {
-  return productsData.find((product) => product.id === +id);
+  return productsData.find((product) => product.ID === +id);
 }
 
 function findProductIndex(id) {
-  return productsData.findIndex((product) => product.id === +id);
+  return productsData.findIndex((product) => product.ID === +id);
 }
 /*
 --------------------------
@@ -33,13 +33,17 @@ async function getOneProduct(req, res, next) {
   --------------------------
   */
 async function getAllProducts(req, res, next) {
-  let { number, pages } = req.query;
-  pages = pages || 1;
-  number = number || 10;
-  const firstIndex = (+pages - 1) * number;
-  const lasIndex = +pages * number;
-  const products = productsData.slice(firstIndex, lasIndex);
-  return res.send(products);
+  try {
+    let { number, pages } = req.query;
+    pages = pages || 1;
+    number = number || 10;
+    const firstIndex = (+pages - 1) * number;
+    const lasIndex = +pages * number;
+    const products = productsData.slice(firstIndex, lasIndex);
+    return res.send(products);
+  } catch (error) {
+    res.status(500).send("Error while fetching data");
+  }
 }
 
 /*
@@ -128,12 +132,10 @@ async function deleteAllProducts(req, res, next) {
 }
 
 module.exports = {
-  createProduct : createProduct,
-  deleteAllProducts : deleteAllProducts,
-  deleteProduct : deleteProduct,
+  createProduct: createProduct,
+  deleteAllProducts: deleteAllProducts,
+  deleteProduct: deleteProduct,
   getAllProducts: getAllProducts,
   getOneProduct: getOneProduct,
   updateProduct: updateProduct,
 };
-
-

@@ -1,6 +1,5 @@
 const cors = require("cors");
 const dotenv = require("dotenv");
-
 const express = require("express");
 const { json } = require("express");
 
@@ -17,7 +16,7 @@ const {
   userRouter,
   productRouter,
 } = require("./routes/index.js");
-// import productRouter from "./routes/products.routes.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
