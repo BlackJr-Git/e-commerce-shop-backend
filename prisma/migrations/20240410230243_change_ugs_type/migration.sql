@@ -1,0 +1,6 @@
+-- DropIndex
+DROP INDEX "Product_UGS_key";
+
+-- AlterTable
+ALTER TABLE "Product" ALTER COLUMN "UGS" DROP NOT NULL,
+ALTER COLUMN "UGS" SET DATA TYPE TEXT;

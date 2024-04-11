@@ -16,17 +16,17 @@ datasource db {
 model Product {
   ID                Int       @id @default(autoincrement())
   type              String
-  UGS               Int       @unique
+  UGS               String?    
   name              String
-  isPublished       Boolean   @default(false)
-  isHighlighted     Boolean   @default(false)
+  isPublished       Int       @default(0)
+  isHighlighted     Int       @default(0)
   isVisible         String
   shortDescription  String?
   description       String
   discountStartDate DateTime?
   discountEndDate   DateTime?
-  isAvailable       Boolean   @default(true)
-  weight            Float?
+  isAvailable       Int       @default(1)
+  weigth            Float?
   length            Float?
   width             Float?
   height            Float?

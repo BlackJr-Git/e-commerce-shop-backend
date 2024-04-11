@@ -1,8 +1,7 @@
-const data = require("../../assets/initial-data.json");
 const productsData = require("../../assets/products");
 
-const userData = data.users;
-// const productsData = productsData ;
+const { PrismaClient } = require("@prisma/client");
+const { Product } = new PrismaClient();
 
 function findProductById(id) {
   return productsData.find((product) => product.ID === +id);
@@ -18,12 +17,24 @@ the database.
 --------------------------
 */
 async function getOneProduct(req, res, next) {
-  const { ProductId } = req.params;
-  let product = findProductById(ProductId);
-  if (product) {
-    return res.send(product);
+  const { productId } = req.params;
+  try {
+    const product = await Product.findUnique({
+      where: {
+        ID : +productId,
+      },
+    });
+
+    if (product.ID) {
+      return res.send(product);
+    }
+    return res
+      .status(404)
+      .send(`Le produit avec l'id : ${productId} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("erreur lors de la lecture des données");
   }
-  return res.status(404).send(`Le tweet avec l'id : ${ProductId} n'existe pas`);
 }
 
 /*
@@ -33,35 +44,28 @@ async function getOneProduct(req, res, next) {
   --------------------------
   */
 async function getAllProducts(req, res, next) {
+  let { number, pages } = req.query;
+
   try {
-    let { number, pages } = req.query;
-    pages = pages || 1;
-    number = number || 10;
-    const firstIndex = (+pages - 1) * number;
-    const lasIndex = +pages * number;
-    const products = productsData.slice(firstIndex, lasIndex);
-    return res.send(products);
+    const pageSize = parseInt(number, 10) || 10;
+    const currentPage = parseInt(pages, 10) || 1;
+    const skip = (currentPage - 1) * pageSize;
+
+    let products = await Product.findMany({ skip, take: pageSize });
+    const totalProducts = await Product.count();
+
+    return res.send({
+      products,
+      totalProducts,
+      currentPage,
+      pageSize,
+      totalPages: Math.ceil(totalProducts / pageSize),
+    });
+
   } catch (error) {
+    console.log(error);
     res.status(500).send("Error while fetching data");
   }
-}
-
-/*
-  --------------------------
-  Retrieve all one user product from 
-  the database.
-  --------------------------
-  */
-async function getUserProducts(req, res, next) {
-  //   const { userName } = req.params;
-  //   if (userName) {
-  //     let userId = userData.find((user) => user.handle === userName);
-  //     const userTweets = ProductData.filter((tweet) => tweet.author == userId.id);
-  //     return res.send(userTweets);
-  //   }
-  //   return res
-  //     .status(404)
-  //     .send(`L'utilisateur avec le handle ${userName} n'existe pas`);
 }
 
 /*
@@ -71,13 +75,16 @@ async function getUserProducts(req, res, next) {
   --------------------------
   */
 async function createProduct(req, res, next) {
-  const newProduct = req.body;
-  if (newProduct.text) {
-    newProduct.id = productsData.length + 1;
-    productsData.push(newProduct);
-    return res.status(201).send(productsData[productsData.length - 1]);
+  const product = req.body;
+  try {
+    const newProduct = await Product.create({ data: product });
+    return res.send(newProduct);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send("Une erreur est survenue lors de la création du produit");
   }
-  return res.status(404).res("Les donnée de votre produit sont incomplete");
 }
 
 /*
@@ -127,7 +134,7 @@ async function deleteProduct(req, res, next) {
   --------------------------
   */
 async function deleteAllProducts(req, res, next) {
-  productsData = [];
+  await Product.deleteMany({});
   return res.send("All Products have been deleted");
 }
 

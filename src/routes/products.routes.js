@@ -15,16 +15,16 @@ const productRouter = Router();
 productRouter.get(`/`, getAllProducts);
 
 //Get one Product by ProductId
-productRouter.get(`/:ProductId`, getOneProduct);
+productRouter.get(`/:productId`, getOneProduct);
 
 //Create a new Product
 productRouter.post(`/add`, createProduct);
 
 //Update Tweet by ProductId
-productRouter.put(`/update/:ProductId`, updateProduct);
+productRouter.put(`/update/:productId`, updateProduct);
 
 //Delete Tweet by ProductId
-productRouter.delete(`/delete/:ProductId`, deleteProduct);
+productRouter.delete(`/delete/:productId`, deleteProduct);
 
 //Delete all Products
 productRouter.delete(`/delete`, deleteAllProducts);
