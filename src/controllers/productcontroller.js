@@ -1,27 +1,18 @@
-const productsData = require("../../assets/products");
-
 const { PrismaClient } = require("@prisma/client");
 const { Product } = new PrismaClient();
 
-function findProductById(id) {
-  return productsData.find((product) => product.ID === +id);
-}
-
-function findProductIndex(id) {
-  return productsData.findIndex((product) => product.ID === +id);
-}
 /*
 --------------------------
 Retrieve one product from 
 the database.
 --------------------------
 */
-async function getOneProduct(req, res, next) {
+async function getOneProduct(req, res) {
   const { productId } = req.params;
   try {
     const product = await Product.findUnique({
       where: {
-        ID : +productId,
+        ID: +productId,
       },
     });
 
@@ -38,12 +29,38 @@ async function getOneProduct(req, res, next) {
 }
 
 /*
+--------------------------
+Retrieve products by name from 
+the database.
+--------------------------
+*/
+async function searchProducts(req, res) {
+  const { productName } = req.params;
+  try {
+    const products = await Product.findMany({
+      where: {
+        name: productName,
+      },
+    });
+
+    if (products) {
+      return res.send(products);
+    }
+    return res
+      .status(404)
+      .send(`Le produit avec le nom : ${productName} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("erreur lors de la lecture des données");
+  }
+}
+/*
   --------------------------
   Retrieve all products from 
   the database.
   --------------------------
   */
-async function getAllProducts(req, res, next) {
+async function getAllProducts(req, res) {
   let { number, pages } = req.query;
 
   try {
@@ -61,7 +78,6 @@ async function getAllProducts(req, res, next) {
       pageSize,
       totalPages: Math.ceil(totalProducts / pageSize),
     });
-
   } catch (error) {
     console.log(error);
     res.status(500).send("Error while fetching data");
@@ -74,7 +90,7 @@ async function getAllProducts(req, res, next) {
   in the database
   --------------------------
   */
-async function createProduct(req, res, next) {
+async function createProduct(req, res) {
   const product = req.body;
   try {
     const newProduct = await Product.create({ data: product });
@@ -93,16 +109,25 @@ async function createProduct(req, res, next) {
   in the request
   --------------------------
   */
-async function updateProduct(req, res, next) {
-  const product = req.body;
-  const { ProductId } = req.params;
-  const ProductIndex = findProductIndex(ProductId);
-  if (ProductIndex < 0) {
-    productsData.push(product);
-    return res.status(201).send(productsData[productsData.length - 1]);
-  } else {
-    productsData[ProductIndex] = product;
-    return res.status(200).send(productsData[ProductIndex]);
+async function updateProduct(req, res) {
+  const { productId } = req.params;
+  try {
+    const updatedProduct = await Product.update({
+      where: {
+        ID: +productId,
+      },
+      data: req.body || {},
+    });
+
+    if (updatedProduct.ID) {
+      return res.status(201).send(updatedProduct);
+    }
+    return res
+      .status(404)
+      .send(`Le produit avec l'id : ${productId} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Erreur lors de la modification des donnes");
   }
 }
 
@@ -114,16 +139,29 @@ async function updateProduct(req, res, next) {
   --------------------------
   */
 async function deleteProduct(req, res, next) {
-  const { ProductId } = req.params;
-  const productIndex = findProductIndex(ProductId);
-  const product = findProductById(ProductId);
-  if (productIndex < 0) {
-    return res
-      .status(404)
-      .send(`L'article avec l'id ${ProductId} n'existe pas`);
-  } else {
-    productsData.splice(productIndex, 1);
-    return res.status(202).send(product);
+  const { productId } = req.params;
+
+  try {
+    const deletedProduct = await Product.delete({
+      where: {
+        ID: +productId,
+      },
+    });
+
+    if (deletedProduct.ID) {
+      return res.status(200).send(deletedProduct);
+    }
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res
+        .status(404)
+        .send(`Le produit avec l'id ${productId}  n'a pas été trouvée.`);
+    } else {
+      console.error(error);
+      return res
+        .status(500)
+        .send("Une erreur est survenue lors de la suppression du coach.");
+    }
   }
 }
 
@@ -134,8 +172,15 @@ async function deleteProduct(req, res, next) {
   --------------------------
   */
 async function deleteAllProducts(req, res, next) {
-  await Product.deleteMany({});
-  return res.send("All Products have been deleted");
+  try {
+    await Product.deleteMany({});
+    return res.send("All Products have been deleted");
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send("Une erreur est survenue lors de la suppressionn des donnees");
+  }
 }
 
 module.exports = {
@@ -145,4 +190,5 @@ module.exports = {
   getAllProducts: getAllProducts,
   getOneProduct: getOneProduct,
   updateProduct: updateProduct,
+  searchProducts: searchProducts,
 };

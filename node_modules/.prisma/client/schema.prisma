@@ -14,30 +14,20 @@ datasource db {
 }
 
 model Product {
-  ID                Int       @id @default(autoincrement())
-  type              String
-  UGS               String?    
+  ID                Int            @id @default(autoincrement())  
   name              String
-  isPublished       Int       @default(0)
-  isHighlighted     Int       @default(0)
-  isVisible         String
-  shortDescription  String?
+  price             Float
+  Images            String
   description       String
-  discountStartDate DateTime?
-  discountEndDate   DateTime?
-  isAvailable       Int       @default(1)
+  shortDescription  String?
+  isHighlighted     Boolean?       @default(false)
+  isVisible         Boolean        @default(true) 
   weigth            Float?
   length            Float?
   width             Float?
   height            Float?
   discountPrice     Float?
-  price             Float
   Categories        String
-  tag               String
-  Images            String
-  Parent            String?
-  Groups            String?
-  suggestedProducts Int[]  
   orderItems         OrderItem[]
 }
 
