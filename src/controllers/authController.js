@@ -1,3 +1,6 @@
+const { PrismaClient } = require("@prisma/client");
+const { User } = new PrismaClient();
+
 /*
 --------------------------
 Create and save a new user
@@ -24,7 +27,37 @@ and roles
 --------------------------
 */
 async function signin(req, res, next) {
-  return res.send("User is signin");
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (user) {
+      if (password !== user.password) {
+        return res.status(404).send("Le mot de passe est incorecte");
+      }
+
+      if (password === user.password) {
+        const {password ,role, ...userInfo } = user
+        return res.send(userInfo);
+      }
+    }
+
+    if (!user) {
+      return res
+        .status(404)
+        .send(`L'utilisateur avec l'email : ${email} n'existe pas`);
+    }
+
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Une erreur est survenue lors de la connexion");
+  }
 }
 
 /*
@@ -54,13 +87,13 @@ async function deleteAccount(req, res, next) {
   return res.send("User account is deleted");
 }
 
-module.exports =  {
-  activateAccount : activateAccount,
-  deleteAccount : deleteAccount,
-  logout : logout, 
-  recoverAccount : recoverAccount,
-  signin : signin,
-  signup : signup, 
+module.exports = {
+  activateAccount: activateAccount,
+  deleteAccount: deleteAccount,
+  logout: logout,
+  recoverAccount: recoverAccount,
+  signin: signin,
+  signup: signup,
 };
 
 // export default {
