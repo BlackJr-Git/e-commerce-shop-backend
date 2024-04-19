@@ -6,7 +6,7 @@ const {
   getAllUsers,
   getOneUser,
   updateUser,
-  getOneUserByHandle,
+  getOneUserByEmail,
 } = require("../controllers/userController.js");
 
 const userRouter = Router();
@@ -17,8 +17,8 @@ userRouter.get(`/`, getAllUsers);
 //Get one user by userId
 userRouter.get(`/:userId`, getOneUser);
 
-//Get one user by handle
-userRouter.get(`/userName/:userName`, getOneUserByHandle);
+//Get one user by email
+userRouter.get(`/email/email`, getOneUserByEmail);
 
 //Create a new user
 userRouter.post(`/add`, createUser);

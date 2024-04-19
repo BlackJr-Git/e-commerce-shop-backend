@@ -20,7 +20,7 @@ model Product {
   Images            String
   description       String
   shortDescription  String?
-  isHighlighted     Boolean?       @default(false)
+  isHighlighted     Boolean       @default(false)
   isVisible         Boolean        @default(true) 
   weigth            Float?
   length            Float?
@@ -44,7 +44,7 @@ model User {
   township  String
   avatar    String?
   password  String
-  role      String
+  role      String  @default("user")
   orders    Order[]
 }
 
@@ -52,8 +52,8 @@ model Order {
   id         Int         @id @default(autoincrement())
   createdAt  DateTime    @default(now())
   userId     Int
-  user       User        @relation(fields: [userId], references: [id])
-  status     String      // Par exemple : "en attente", "expédié", "livré"
+  user       User        @relation(fields: [userId], references: [id]) 
+  status     String      @default("en attente") // ex : "en attente", "expédié", "livré"
   total      Float       
   orderItems OrderItem[]
 }

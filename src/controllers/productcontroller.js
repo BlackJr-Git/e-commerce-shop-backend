@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const { Product } = new PrismaClient();
+const { uploadImage } = require("../utils/image-upload");
 
 /*
 --------------------------
@@ -92,9 +93,13 @@ async function getAllProducts(req, res) {
   */
 async function createProduct(req, res) {
   const product = req.body;
+
+  product.Images = await uploadImage(product.Images);
+  console.log(product);
+
   try {
-    const newProduct = await Product.create({ data: product });
-    return res.send(newProduct);
+    // const newProduct = await Product.create({ data: product });
+    // return res.send(newProduct);
   } catch (error) {
     console.log(error);
     return res

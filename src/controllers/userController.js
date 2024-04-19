@@ -1,45 +1,55 @@
 // import data from "../../assets/initial-data.json" assert { type: "json" };
 const data = require("../../assets/initial-data.json");
 
-let userData = data.users;
-function findUserById(id) {
-  return userData.find((user) => user.id === +id);
-}
-
-function findUserByHandle(handle) {
-  return userData.find((user) => user.handle === handle);
-}
-
-function findUserIndex(id) {
-  return userData.findIndex((article) => article.id === +id);
-}
+const { PrismaClient } = require("@prisma/client");
+const { User } = new PrismaClient();
 
 /*
 --------------------------
-Retrieve one user from 
+Retrieve one by user id from 
 the database.
 --------------------------
 */
-async function getOneUser(req, res, next) {
+async function getOneUser(req, res) {
   const { userId } = req.params;
-  let user = findUserById(userId);
-  if (user) {
-    return res.send(user);
+  try {
+    const user = await User.findUnique({
+      where: {
+        id: +userId,
+      },
+    });
+
+    if (user.id) {
+      return res.send(user);
+    }
+    return res
+      .status(404)
+      .send(`L'utilisateur avec l'id : ${userId} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("erreur lors de la lecture des données");
   }
-  return res
-    .status(404)
-    .send(`L'utilisateur avec l'id : ${userId} n'existe pas`);
 }
 
-async function getOneUserByHandle(req, res, next) {
-  const { userName } = req.params;
-  let user = findUserByHandle(userName);
-  if (user.id) {
-    return res.send(user);
+async function getOneUserByEmail(req, res) {
+  const { email } = req.body;
+  try {
+    const user = await User.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (user.email) {
+      return res.send(user);
+    }
+    return res
+      .status(404)
+      .send(`L'utilisateur avec l'email : ${email} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("erreur lors de la lecture des données");
   }
-  return res
-    .status(404)
-    .send(`L'utilisateur avec l'handle : ${userName} n'existe pas`);
 }
 
 /*
@@ -49,7 +59,7 @@ the database.
 --------------------------
 */
 async function getAllUsers(req, res, next) {
-  return res.send(userData);
+  return res.send("All users");
 }
 
 /*
@@ -59,10 +69,17 @@ in the database
 --------------------------
 */
 async function createUser(req, res, next) {
-  const newUser = req.body;
+  const user = req.body;
 
-  userData.push(newUser);
-  return res.status(200).send(userData[userData.length - 1]);
+  try {
+    const newUser = await User.create({ data: user });
+    return res.send(newUser);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send("Une erreur est survenue lors de la création du produit");
+  }
 }
 
 /*
@@ -71,16 +88,25 @@ Update a user by the id
 in the request
 --------------------------
 */
-async function updateUser(req, res, next) {
-  const user = req.body;
+async function updateUser(req, res) {
   const { userId } = req.params;
-  const userIndex = findUserIndex(userId);
-  if (userIndex < 0) {
-    userData.push(user);
-    return res.status(201).send(userData[userData.length - 1]);
-  } else {
-    userData[userIndex] = user;
-    return res.status(200).send(userData[userIndex]);
+  try {
+    const updatedUser = await User.update({
+      where: {
+        id: +userId,
+      },
+      data: req.body || {},
+    });
+
+    if (updatedUser.id) {
+      return res.status(201).send(updatedUser);
+    }
+    return res
+      .status(404)
+      .send(`L'utilisateur avec l'id : ${userId} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Erreur lors de la modification des donnes");
   }
 }
 
@@ -91,16 +117,30 @@ the specified id
 in the request
 --------------------------
 */
-async function deleteUser(req, res, next) {
+async function deleteUser(req, res) {
   const { userId } = req.params;
-  const userIndex = findUserIndex(userId);
-  if (userIndex < 0) {
-    return res
-      .status(404)
-      .send(`L'utilisateur avec l'id ${userId} n'existe pas`);
-  } else {
-    const user = userData.splice(userIndex, 1)[0];
-    return res.status(202).send(user);
+
+  try {
+    const deletedUser = await User.delete({
+      where: {
+        id: +userId,
+      },
+    });
+
+    if (deletedUser.id) {
+      return res.status(200).send(deletedUser);
+    }
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res
+        .status(404)
+        .send(`L'utilisateur avec l'id ${userId}  n'a pas été trouvée.`);
+    } else {
+      console.error(error);
+      return res
+        .status(500)
+        .send("Une erreur est survenue lors de la suppression du coach.");
+    }
   }
 }
 
@@ -111,8 +151,15 @@ the database.
 --------------------------
 */
 async function deleteAllUsers(req, res, next) {
-  userData = [];
-  return res.send("All Users have been deleted");
+  try {
+    await User.deleteMany({});
+    return res.send("All Products have been deleted");
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send("Une erreur est survenue lors de la suppressionn des donnees");
+  }
 }
 
 module.exports = {
@@ -122,5 +169,5 @@ module.exports = {
   getAllUsers: getAllUsers,
   getOneUser: getOneUser,
   updateUser: updateUser,
-  getOneUserByHandle: getOneUserByHandle,
+  getOneUserByEmail: getOneUserByEmail,
 };

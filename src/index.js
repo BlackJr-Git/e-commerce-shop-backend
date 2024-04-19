@@ -8,6 +8,7 @@ const {
   rolesBaseURI,
   usersBaseURI,
   productBaseURI,
+  orderBaseURI,
 } = require("./config/paths.js");
 
 const {
@@ -15,8 +16,8 @@ const {
   roleRouter,
   userRouter,
   productRouter,
+  orderRouter,
 } = require("./routes/index.js");
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,7 @@ app.use(authBaseURI, authRouter);
 app.use(rolesBaseURI, roleRouter);
 app.use(usersBaseURI, userRouter);
 app.use(productBaseURI, productRouter);
+app.use(orderBaseURI, orderRouter);
 
 app.listen(PORT, () => {
   console.log(`The server listens on http://localhost:${PORT}`);
