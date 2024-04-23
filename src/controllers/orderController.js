@@ -1,5 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const { Order } = new PrismaClient();
+const { User } = new PrismaClient();
+const { sendMail } = require("../utils/send-mail");
 
 /*
 --------------------------
@@ -8,12 +10,71 @@ the database.
 --------------------------
 */
 
+async function getOneOrder(req, res) {
+  const { orderId } = req.params;
+  try {
+    const order = await Order.findUnique({
+      where: {
+        id: +orderId,
+      },
+      include: {
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
+        user: true,
+      },
+    });
+
+    if (order.id) {
+      return res.send(order);
+    }
+    return res
+      .status(404)
+      .send(`La commande avec l'id : ${orderId} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("erreur lors de la lecture des données");
+  }
+}
+
 /*
   --------------------------
   Retrieve all orders from 
   the database.
   --------------------------
 */
+async function getAllOrders(req, res) {
+  let { number, pages } = req.query;
+
+  try {
+    const pageSize = parseInt(number, 10) || 10;
+    const currentPage = parseInt(pages, 10) || 1;
+    const skip = (currentPage - 1) * pageSize;
+
+    let orders = await Order.findMany({
+      skip,
+      take: pageSize,
+      include: { orderItems: true, user: true },
+    });
+
+    const totalOrders = await Order.count();
+
+    return res.send({
+      orders,
+      totalOrders,
+      currentPage,
+      pageSize,
+      totalPages: Math.ceil(totalOrders / pageSize),
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send("Une erreur est survenue lors de la lecture des données");
+  }
+}
 
 /*
   --------------------------
@@ -44,6 +105,20 @@ async function createOrder(req, res) {
       data: orderData,
       include: { orderItems: true },
     });
+
+    const user = await User.findUnique({
+      where: {
+        id: +userId,
+      },
+    });
+
+    sendMail(
+      "Nouvelle commande",
+      `Bonjour ${user.name}, vous venez de passer une commande.`,
+      user,
+      newOrder
+    );
+
     return res.status(201).send(newOrder);
   } catch (error) {
     console.log(error);
@@ -59,6 +134,28 @@ async function createOrder(req, res) {
   in the request
   --------------------------
 */
+
+async function updateOrder(req, res) {
+  const { orderId } = req.params;
+  try {
+    const updatedOrder = await Order.update({
+      where: {
+        id: +orderId,
+      },
+      data: req.body || {},
+    });
+
+    if (updatedOrder.id) {
+      return res.status(201).send(updatedOrder);
+    }
+    return res
+      .status(404)
+      .send(`La commande avec l'id : ${orderId} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Erreur lors de la modification des donnes");
+  }
+}
 
 /*
   --------------------------
@@ -77,4 +174,7 @@ async function createOrder(req, res) {
 
 module.exports = {
   createOrder: createOrder,
+  getAllOrders: getAllOrders,
+  updateOrder: updateOrder,
+  getOneOrder: getOneOrder,
 };

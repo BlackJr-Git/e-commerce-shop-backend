@@ -20,10 +20,10 @@ productRouter.get(`/:productId`, getOneProduct);
 //Create a new Product
 productRouter.post(`/add`, createProduct);
 
-//Update Tweet by ProductId
+//Update Product by ProductId
 productRouter.put(`/update/:productId`, updateProduct);
 
-//Delete Tweet by ProductId
+//Delete Product by ProductId
 productRouter.delete(`/delete/:productId`, deleteProduct);
 
 //Delete all Products

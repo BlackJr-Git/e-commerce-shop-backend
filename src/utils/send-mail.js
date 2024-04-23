@@ -4,7 +4,7 @@ const mailjet = require("node-mailjet").apiConnect(
   );
 
 
-function sendMail(mailSubject,mailTitle, user) {
+function sendMail(mailSubject,mailTitle, user , order) {
   const request = mailjet.post("send", { version: "v3.1" }).request({
     Messages: [
       {

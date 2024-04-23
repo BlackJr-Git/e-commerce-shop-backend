@@ -98,8 +98,8 @@ async function createProduct(req, res) {
   console.log(product);
 
   try {
-    // const newProduct = await Product.create({ data: product });
-    // return res.send(newProduct);
+    const newProduct = await Product.create({ data: product });
+    return res.send(newProduct);
   } catch (error) {
     console.log(error);
     return res
