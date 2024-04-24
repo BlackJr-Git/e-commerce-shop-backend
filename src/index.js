@@ -9,6 +9,7 @@ const {
   usersBaseURI,
   productBaseURI,
   orderBaseURI,
+  salesBaseURI,
 } = require("./config/paths.js");
 
 const {
@@ -17,6 +18,7 @@ const {
   userRouter,
   productRouter,
   orderRouter,
+  salesRouter,
 } = require("./routes/index.js");
 
 const app = express();
@@ -43,6 +45,7 @@ app.use(rolesBaseURI, roleRouter);
 app.use(usersBaseURI, userRouter);
 app.use(productBaseURI, productRouter);
 app.use(orderBaseURI, orderRouter);
+app.use(salesBaseURI, salesRouter);
 
 app.listen(PORT, () => {
   console.log(`The server listens on http://localhost:${PORT}`);
