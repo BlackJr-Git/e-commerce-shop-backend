@@ -42,7 +42,7 @@ model User {
   address2  String?
   city      String
   township  String
-  avatar    String?
+  avatar    String? @default("https://res.cloudinary.com/devhqdrwl/image/upload/v1713983564/Users_Avatars/mdijirvhladlipqfmcgh.png")
   password  String
   role      String  @default("user")
   orders    Order[]

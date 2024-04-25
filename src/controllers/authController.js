@@ -1,5 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
+const { comparePassword } = require("../utils/hashPassword");
 const { User } = new PrismaClient();
+const dotenv = require("dotenv");
+dotenv.config();
 
 /*
 --------------------------
@@ -37,14 +40,24 @@ async function signin(req, res, next) {
     });
 
     if (user) {
-      if (password !== user.password) {
+      const isPasswordValid = await comparePassword(password, user.password);
+
+      if (isPasswordValid) {
+        const { password, ...userInfo } = user;
+        // let token = jwt.sign(userInfo, process.env.SECRET_PRIVATE_KEY);
+        return res.send(userInfo);
+      } else {
         return res.status(404).send("Le mot de passe est incorecte");
       }
 
-      if (password === user.password) {
-        const {password ,role, ...userInfo } = user
-        return res.send(userInfo);
-      }
+      // if (password !== user.password) {
+      //   return res.status(404).send("Le mot de passe est incorecte");
+      // }
+
+      // if (password === user.password) {
+      //   const { password, role, ...userInfo } = user;
+      //   return res.send(userInfo);
+      // }
     }
 
     if (!user) {
@@ -52,8 +65,6 @@ async function signin(req, res, next) {
         .status(404)
         .send(`L'utilisateur avec l'email : ${email} n'existe pas`);
     }
-
-
   } catch (error) {
     console.log(error);
     return res.status(500).send("Une erreur est survenue lors de la connexion");

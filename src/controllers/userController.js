@@ -1,5 +1,6 @@
 // import data from "../../assets/initial-data.json" assert { type: "json" };
 const data = require("../../assets/initial-data.json");
+const { hashPassword } = require("../utils/hashPassword");
 
 const { PrismaClient } = require("@prisma/client");
 const { User } = new PrismaClient();
@@ -59,7 +60,33 @@ the database.
 --------------------------
 */
 async function getAllUsers(req, res, next) {
-  return res.send("All users");
+  let { number, pages } = req.query;
+
+  try {
+    const pageSize = parseInt(number, 10) || 10;
+    const currentPage = parseInt(pages, 10) || 1;
+    const skip = (currentPage - 1) * pageSize;
+
+    let users = await User.findMany({
+      skip,
+      take: pageSize,
+    });
+
+    const totalUser = await User.count();
+
+    return res.send({
+      orders: users,
+      totalUser,
+      currentPage,
+      pageSize,
+      totalPages: Math.ceil(totalUser / pageSize),
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send("Une erreur est survenue lors de la lecture des données");
+  }
 }
 
 /*
@@ -70,6 +97,8 @@ in the database
 */
 async function createUser(req, res, next) {
   const user = req.body;
+
+  user.password = await hashPassword(user.password);
 
   try {
     const newUser = await User.create({ data: user });
