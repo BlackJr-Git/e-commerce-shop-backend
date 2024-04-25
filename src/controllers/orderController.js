@@ -56,8 +56,13 @@ async function getAllOrders(req, res) {
     let orders = await Order.findMany({
       skip,
       take: pageSize,
+      orderBy: {
+        createdAt: "desc",
+      },
       include: { orderItems: true, user: true },
     });
+
+    // orders = orders.reverse();
 
     const totalOrders = await Order.count();
 
@@ -103,7 +108,14 @@ async function createOrder(req, res) {
   try {
     const newOrder = await Order.create({
       data: orderData,
-      include: { orderItems: true },
+      include: {
+        orderItems: {
+          include: {
+            product: true  // Inclure les données de la table Product
+          }
+        },
+        user: true,
+      },
     });
 
     const user = await User.findUnique({
