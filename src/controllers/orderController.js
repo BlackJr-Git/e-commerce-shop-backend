@@ -86,39 +86,46 @@ async function getAllOrders(req, res) {
   Create and save a new order
   in the database
   --------------------------
-  */ 
+  */
 
-  async function getOneUserOrder(req, res) {
-    const { userId } = req.params;
-    try {
-      const order = await Order.findMany({
-        where: {
-          userId: +userId,
-        },
-        include: {
-          orderItems: {
-            include: {
-              product: true,
-            },
+async function getOneUserOrder(req, res) {
+  const { userId } = req.params;
+  let { number, pages } = req.query;
+  try {
+    const pageSize = parseInt(number, 10) || 10;
+    const currentPage = parseInt(pages, 10) || 1;
+    const skip = (currentPage - 1) * pageSize;
+    const order = await Order.findMany({
+      where: {
+        userId: +userId,
+      },
+      skip,
+      take: pageSize,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        orderItems: {
+          include: {
+            product: true,
           },
-          user: true,
         },
-      });
+        user: true,
+      },
+    });
 
-      return res.send(order);
-
-    } catch (error) {
-      console.log(error);
-    }
-    
+    return res.send(order);
+  } catch (error) {
+    console.log(error);
   }
+}
 
 /*
   --------------------------
   Create and save a new order
   in the database
   --------------------------
-  */ 
+  */
 
 async function createOrder(req, res) {
   const { userId, status, total, orderItems } = req.body;
@@ -143,8 +150,8 @@ async function createOrder(req, res) {
       include: {
         orderItems: {
           include: {
-            product: true  // Inclure les données de la table Product
-          }
+            product: true, // Inclure les données de la table Product
+          },
         },
         user: true,
       },
@@ -221,5 +228,5 @@ module.exports = {
   getAllOrders: getAllOrders,
   updateOrder: updateOrder,
   getOneOrder: getOneOrder,
-  getOneUserOrder : getOneUserOrder
+  getOneUserOrder: getOneUserOrder,
 };
