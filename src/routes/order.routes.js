@@ -5,6 +5,7 @@ const {
   getAllOrders,
   updateOrder,
   getOneOrder,
+  getOneUserOrder,
 } = require("../controllers/orderController.js");
 
 const orderRouter = Router();
@@ -14,6 +15,9 @@ orderRouter.post("/add", createOrder);
 
 // Get all Orders
 orderRouter.get("/", getAllOrders);
+
+// Get one user Order
+orderRouter.get("/user/:userId", getOneUserOrder); 
 
 //Get one order by orderId
 orderRouter.get(`/:orderId`, getOneOrder);

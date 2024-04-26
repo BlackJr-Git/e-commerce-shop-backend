@@ -43,7 +43,7 @@ async function signin(req, res, next) {
       const isPasswordValid = await comparePassword(password, user.password);
 
       if (isPasswordValid) {
-        const { password, ...userInfo } = user;
+        const { password,role, ...userInfo } = user;
         // let token = jwt.sign(userInfo, process.env.SECRET_PRIVATE_KEY);
         return res.send(userInfo);
       } else {

@@ -86,7 +86,39 @@ async function getAllOrders(req, res) {
   Create and save a new order
   in the database
   --------------------------
-  */
+  */ 
+
+  async function getOneUserOrder(req, res) {
+    const { userId } = req.params;
+    try {
+      const order = await Order.findMany({
+        where: {
+          userId: +userId,
+        },
+        include: {
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+          user: true,
+        },
+      });
+
+      return res.send(order);
+
+    } catch (error) {
+      console.log(error);
+    }
+    
+  }
+
+/*
+  --------------------------
+  Create and save a new order
+  in the database
+  --------------------------
+  */ 
 
 async function createOrder(req, res) {
   const { userId, status, total, orderItems } = req.body;
@@ -189,4 +221,5 @@ module.exports = {
   getAllOrders: getAllOrders,
   updateOrder: updateOrder,
   getOneOrder: getOneOrder,
+  getOneUserOrder : getOneUserOrder
 };
