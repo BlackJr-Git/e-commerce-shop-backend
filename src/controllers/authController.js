@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const { comparePassword } = require("../utils/hashPassword");
 const { User } = new PrismaClient();
+const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -43,21 +44,16 @@ async function signin(req, res, next) {
       const isPasswordValid = await comparePassword(password, user.password);
 
       if (isPasswordValid) {
-        const { password,role, ...userInfo } = user;
-        // let token = jwt.sign(userInfo, process.env.SECRET_PRIVATE_KEY);
-        return res.send(userInfo);
+        const { password, ...userPayload } = user;
+        let token = jwt.sign(userPayload, process.env.SECRET_PRIVATE_KEY);
+        const { role, ...userInfo } = userPayload;
+        return res.send({
+          user: userInfo,
+          token: token,
+        });
       } else {
         return res.status(404).send("Le mot de passe est incorecte");
       }
-
-      // if (password !== user.password) {
-      //   return res.status(404).send("Le mot de passe est incorecte");
-      // }
-
-      // if (password === user.password) {
-      //   const { password, role, ...userInfo } = user;
-      //   return res.send(userInfo);
-      // }
     }
 
     if (!user) {

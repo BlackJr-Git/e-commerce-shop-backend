@@ -25,7 +25,8 @@ in the database
 --------------------------
 */
 async function createRole(req, res, next) {
-  return res.send("Role is created");
+
+  return res.send(req.payload);
 }
 
 /*

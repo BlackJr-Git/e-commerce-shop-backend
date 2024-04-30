@@ -1,11 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const { Product } = new PrismaClient();
-const { uploadImage } = require("../utils/image-upload");
 
 /*
 --------------------------
 Retrieve one product from 
-the database.
+the database by id.
 --------------------------
 */
 async function getOneProduct(req, res) {
@@ -36,11 +35,15 @@ the database.
 --------------------------
 */
 async function searchProducts(req, res) {
-  const { productName } = req.params;
+  const { name } = req.query;
+
   try {
     const products = await Product.findMany({
       where: {
-        name: productName,
+        name: {
+          startsWith: name,
+          mode: "insensitive",
+        },
       },
     });
 
@@ -49,7 +52,7 @@ async function searchProducts(req, res) {
     }
     return res
       .status(404)
-      .send(`Le produit avec le nom : ${productName} n'existe pas`);
+      .send(`Le produit avec le nom : ${name} n'existe pas`);
   } catch (error) {
     console.log(error);
     return res.status(500).send("erreur lors de la lecture des données");
@@ -62,14 +65,23 @@ async function searchProducts(req, res) {
   --------------------------
   */
 async function getAllProducts(req, res) {
-  let { number, pages } = req.query;
+  let { number, pages, name } = req.query;
 
   try {
     const pageSize = parseInt(number, 10) || 10;
     const currentPage = parseInt(pages, 10) || 1;
     const skip = (currentPage - 1) * pageSize;
 
-    let products = await Product.findMany({ skip, take: pageSize });
+    let products = await Product.findMany({
+      skip,
+      take: pageSize,
+      where: {
+        name: {
+          startsWith: name,
+          mode: "insensitive",
+        },
+      },
+    });
     const totalProducts = await Product.count();
 
     return res.send({
@@ -93,9 +105,6 @@ async function getAllProducts(req, res) {
   */
 async function createProduct(req, res) {
   const product = req.body;
-
-  product.Images = await uploadImage(product.Images);
-  console.log(product);
 
   try {
     const newProduct = await Product.create({ data: product });

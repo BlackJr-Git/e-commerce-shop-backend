@@ -7,6 +7,7 @@ const {
   getOneRole,
   updateRole,
 } = require("../controllers/roleController.js");
+const authToken = require("../middlewares/auth");
 
 const roleRouter = Router();
 
@@ -17,7 +18,7 @@ roleRouter.get(`/`, getAllRoles);
 roleRouter.get(`/:roleId`, getOneRole);
 
 //Create a new role
-roleRouter.post(`/add`, createRole);
+roleRouter.post(`/add`, authToken, createRole);
 
 //Update role by roleId
 roleRouter.put(`/update/:roleId`, updateRole);
