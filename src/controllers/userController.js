@@ -75,7 +75,7 @@ async function getAllUsers(req, res, next) {
     const totalUser = await User.count();
 
     return res.send({
-      orders: users,
+      users,
       totalUser,
       currentPage,
       pageSize,
@@ -99,6 +99,8 @@ async function createUser(req, res, next) {
   const user = req.body;
 
   user.password = await hashPassword(user.password);
+  user.avatar =
+    "https://res.cloudinary.com/devhqdrwl/image/upload/v1713983564/Users_Avatars/mdijirvhladlipqfmcgh.png";
 
   try {
     const newUser = await User.create({ data: user });

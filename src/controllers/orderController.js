@@ -59,7 +59,7 @@ async function getAllOrders(req, res) {
       orderBy: {
         createdAt: "desc",
       },
-      include: { orderItems: true, user: true },
+      include: { orderItems: true,  user: true },
     });
 
     // orders = orders.reverse();
