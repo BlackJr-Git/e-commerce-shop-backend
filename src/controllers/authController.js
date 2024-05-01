@@ -17,6 +17,30 @@ async function signup(req, res, next) {
 
 /*
 --------------------------
+Verfiy is user is Admin
+--------------------------
+*/
+async function isAdmin(req, res, next) {
+  const token = req.body.token 
+  if (!token) {
+    return res.status(401).send("token d'authentification invalide");
+  }
+
+  try {
+    const userPayloads = jwt.verify(token, process.env.SECRET_PRIVATE_KEY);
+    const { role } = userPayloads;
+    if (role === "admin") {
+      return res.send(true);
+    }
+    return res.send("token d'authentification invalide");
+  } catch (error) {
+    console.log(error);
+    return res.status(401).send("token d'authentification invalide"); 
+  }
+}
+
+/*
+--------------------------
 Activate user account
 --------------------------
 */
@@ -45,11 +69,20 @@ async function signin(req, res, next) {
 
       if (isPasswordValid) {
         const { password, ...userPayload } = user;
-        let token = jwt.sign(userPayload, process.env.SECRET_PRIVATE_KEY);
+        let token = jwt.sign(userPayload, process.env.SECRET_PRIVATE_KEY, {
+          expiresIn: "1d",
+        });
         const { role, ...userInfo } = userPayload;
+
+        // res.setHeader('Authorization', `Bearer ${token}`);
+        res.cookie("token", token, {
+          // httpOnly: true,
+          sameSite: "strict",
+          maxAge: 24 * 60 * 60 * 1000,
+        });
         return res.send({
           user: userInfo,
-          token: token,
+          // token: token,
         });
       } else {
         return res.status(404).send("Le mot de passe est incorecte");
@@ -101,13 +134,5 @@ module.exports = {
   recoverAccount: recoverAccount,
   signin: signin,
   signup: signup,
+  isAdmin: isAdmin,
 };
-
-// export default {
-//   activateAccount,
-//   deleteAccount,
-//   logout,
-//   recoverAccount,
-//   signin,
-//   signup,
-// };

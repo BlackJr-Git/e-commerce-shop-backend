@@ -7,30 +7,29 @@ const {
   getOneProduct,
   updateProduct,
   searchProducts,
-} = require("../controllers/productcontroller.js"
-)
+} = require("../controllers/productcontroller.js");
 
 const productRouter = Router();
 
 //Get all Products
-productRouter.get(`/`, getAllProducts); 
+productRouter.get(`/`, getAllProducts);
 
 //Get all Products by name
-productRouter.get(`/search`, searchProducts); 
+productRouter.get(`/search`, searchProducts);
 
 //Get one Product by ProductId
-productRouter.get(`/:productId`, getOneProduct); 
+productRouter.get(`/:productId`, getOneProduct);
 
 //Create a new Product
-productRouter.post(`/add`, createProduct); 
+productRouter.post(`/add`, createProduct);
 
 //Update Product by ProductId
-productRouter.put(`/update/:productId`, updateProduct); 
+productRouter.put(`/update/:productId`, updateProduct);
 
 //Delete Product by ProductId
-productRouter.delete(`/delete/:productId`, deleteProduct); 
+productRouter.delete(`/delete/:productId`, deleteProduct);
 
-//Delete all Products 
-productRouter.delete(`/delete`, deleteAllProducts); 
- 
+//Delete all Products
+productRouter.delete(`/delete`, deleteAllProducts);
+
 module.exports = productRouter;

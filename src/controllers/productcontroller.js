@@ -58,6 +58,37 @@ async function searchProducts(req, res) {
     return res.status(500).send("erreur lors de la lecture des données");
   }
 }
+
+/*
+--------------------------
+Retrieve products by category from 
+the database.
+--------------------------
+*/
+async function searchProductsByCategory(req, res) {
+  const { category } = req.query;
+
+  try {
+    const products = await Product.findMany({
+      where: {
+        Categories : {
+          startsWith: category,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    if (products) {
+      return res.send(products);
+    }
+    return res
+      .status(404)
+      .send(`Le produit avec le nom : ${category} n'existe pas`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("erreur lors de la lecture des données");
+  }
+}
 /*
   --------------------------
   Retrieve all products from 
@@ -125,12 +156,17 @@ async function createProduct(req, res) {
   */
 async function updateProduct(req, res) {
   const { productId } = req.params;
+
+  const product = req.body;
+  product.isHighlighted = product.isHighlighted === "on";
+  product.isVisible = product.isVisible === "on";
+
   try {
     const updatedProduct = await Product.update({
       where: {
         ID: +productId,
       },
-      data: req.body || {},
+      data: product || {},
     });
 
     if (updatedProduct.ID) {

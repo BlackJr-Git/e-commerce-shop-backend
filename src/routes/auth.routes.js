@@ -6,6 +6,7 @@ const {
   recoverAccount,
   signin,
   signup,
+  isAdmin,
 } = require("../controllers/authController.js");
 
 const authRouter = Router();
@@ -21,5 +22,7 @@ authRouter.get("/logout", logout);
 authRouter.post("/recover-account", recoverAccount);
 
 authRouter.post("/delete-account", deleteAccount);
+
+authRouter.post("/verify", isAdmin);
 
 module.exports = authRouter;
