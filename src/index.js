@@ -1,6 +1,7 @@
 const cors = require("cors");
 const dotenv = require("dotenv");
 const express = require("express");
+const cookieParser = require('cookie-parser');
 const { json } = require("express");
 
 const {
@@ -30,8 +31,10 @@ const corsOptions = {
 dotenv.config();
 
 // Config
+app.use(cookieParser());
 app.use(json());
 app.use(cors(corsOptions));
+
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Headers",
