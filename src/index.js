@@ -1,7 +1,7 @@
 const cors = require("cors");
 const dotenv = require("dotenv");
 const express = require("express");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 const { json } = require("express");
 
 const {
@@ -11,6 +11,7 @@ const {
   productBaseURI,
   orderBaseURI,
   salesBaseURI,
+  messagesBaseURI,
 } = require("./config/paths.js");
 
 const {
@@ -20,12 +21,13 @@ const {
   productRouter,
   orderRouter,
   salesRouter,
+  messageRouter,
 } = require("./routes/index.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const corsOptions = {
-  origin: [`http://localhost:5173`],
+  origin: [`http://localhost:5173`, "https://nawtech.vercel.app"],
   credentials: true,
 };
 dotenv.config();
@@ -50,6 +52,7 @@ app.use(usersBaseURI, userRouter);
 app.use(productBaseURI, productRouter);
 app.use(orderBaseURI, orderRouter);
 app.use(salesBaseURI, salesRouter);
+app.use(messagesBaseURI, messageRouter);
 
 app.listen(PORT, () => {
   console.log(`The server listens on http://localhost:${PORT}`);

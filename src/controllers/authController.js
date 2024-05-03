@@ -21,7 +21,7 @@ Verfiy is user is Admin
 --------------------------
 */
 async function isAdmin(req, res, next) {
-  const token = req.body.token 
+  const token = req.body.token;
   if (!token) {
     return res.status(401).send("token d'authentification invalide");
   }
@@ -35,7 +35,7 @@ async function isAdmin(req, res, next) {
     return res.send("token d'authentification invalide");
   } catch (error) {
     console.log(error);
-    return res.status(401).send("token d'authentification invalide"); 
+    return res.status(401).send("token d'authentification invalide");
   }
 }
 
@@ -77,7 +77,7 @@ async function signin(req, res, next) {
         // res.setHeader('Authorization', `Bearer ${token}`);
         res.cookie("token", token, {
           // httpOnly: true,
-          sameSite: "strict",
+          // sameSite: "strict",
           maxAge: 24 * 60 * 60 * 1000,
         });
         return res.send({
@@ -85,14 +85,16 @@ async function signin(req, res, next) {
           // token: token,
         });
       } else {
-        return res.status(404).send("Le mot de passe est incorecte");
+        return res
+          .status(404)
+          .send("Le nom d'utilisateur ou le mot de passe est incorecte");
       }
     }
 
     if (!user) {
       return res
         .status(404)
-        .send(`L'utilisateur avec l'email : ${email} n'existe pas`);
+        .send(`Le nom d'utilisateur ou le mot de passe est incorrecte`);
     }
   } catch (error) {
     console.log(error);

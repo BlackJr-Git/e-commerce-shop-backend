@@ -4,6 +4,7 @@ const userRouter = require("./users.routes.js");
 const productRouter = require("./products.routes.js");
 const orderRouter = require("./order.routes.js");
 const salesRouter = require("./sales.routes.js");
+const messageRouter = require("./message.routes.js");
 
 module.exports = {
   authRouter: authRouter,
@@ -12,4 +13,5 @@ module.exports = {
   productRouter: productRouter,
   orderRouter: orderRouter,
   salesRouter: salesRouter,
+  messageRouter: messageRouter,
 };

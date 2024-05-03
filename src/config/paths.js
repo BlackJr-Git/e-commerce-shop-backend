@@ -4,6 +4,7 @@ const rolesBaseURI = "/api/roles";
 const productBaseURI = "/api/products";
 const orderBaseURI = "/api/orders";
 const salesBaseURI = "/api/sales";
+const messagesBaseURI = "/api/messages";
 
 module.exports = {
   authBaseURI: authBaseURI,
@@ -12,4 +13,5 @@ module.exports = {
   productBaseURI: productBaseURI,
   orderBaseURI: orderBaseURI,
   salesBaseURI: salesBaseURI,
+  messagesBaseURI: messagesBaseURI,
 };

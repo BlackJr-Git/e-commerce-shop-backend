@@ -98,18 +98,30 @@ in the database
 async function createUser(req, res, next) {
   const user = req.body;
 
-  user.password = await hashPassword(user.password);
-  user.avatar =
-    "https://res.cloudinary.com/devhqdrwl/image/upload/v1713983564/Users_Avatars/mdijirvhladlipqfmcgh.png";
-
   try {
+    const userExist = await User.findUnique({
+      where: {
+        email: user.email,
+      },
+    });
+
+    if (userExist) {
+      return res
+        .status(409)
+        .send(`L'utilisateur avec l'email : ${user.email} existe déja`);
+    }
+
+    user.password = await hashPassword(user.password);
+    user.avatar =
+      "https://res.cloudinary.com/devhqdrwl/image/upload/v1713983564/Users_Avatars/mdijirvhladlipqfmcgh.png";
+
     const newUser = await User.create({ data: user });
     return res.send(newUser);
   } catch (error) {
     console.log(error);
     return res
       .status(500)
-      .send("Une erreur est survenue lors de la création du produit");
+      .send("Une erreur est survenue lors de la création de l'utilisateur");
   }
 }
 
