@@ -116,7 +116,10 @@ async function createUser(req, res, next) {
       "https://res.cloudinary.com/devhqdrwl/image/upload/v1713983564/Users_Avatars/mdijirvhladlipqfmcgh.png";
 
     const newUser = await User.create({ data: user });
-    return res.send(newUser);
+
+    const { password, role, ...user } = newUser;
+
+    return res.send(user);
   } catch (error) {
     console.log(error);
     return res
@@ -141,8 +144,10 @@ async function updateUser(req, res) {
       data: req.body || {},
     });
 
+    const { password, role, ...user } = updatedUser;
+
     if (updatedUser.id) {
-      return res.status(201).send(updatedUser);
+      return res.status(201).send(user);
     }
     return res
       .status(404)
@@ -170,8 +175,10 @@ async function deleteUser(req, res) {
       },
     });
 
+    const { password, role, ...user } = deletedUser;
+
     if (deletedUser.id) {
-      return res.status(200).send(deletedUser);
+      return res.status(200).send(user);
     }
   } catch (error) {
     if (error.code === "P2025") {
@@ -196,7 +203,7 @@ the database.
 async function deleteAllUsers(req, res, next) {
   try {
     await User.deleteMany({});
-    return res.send("All Products have been deleted");
+    return res.send("All Users have been deleted");
   } catch (error) {
     console.log(error);
     return res
