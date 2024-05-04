@@ -3,8 +3,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 async function authToken(req, res, next) {
+  const token = await req.cookies.token;
+  // console.log(token);
   try {
-    const token = req.cookies.token;
     const userPayloads = jwt.verify(token, process.env.SECRET_PRIVATE_KEY);
     req.payload = userPayloads;
     next();

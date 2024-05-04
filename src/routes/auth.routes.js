@@ -10,6 +10,7 @@ const {
   isAdmin,
 } = require("../controllers/authController.js");
 
+const isAdminOrAuthor = require("../middlewares/isAdminOrAuthor");
 
 
 const authRouter = Router();
@@ -24,8 +25,9 @@ authRouter.get("/logout", logout);
 
 authRouter.post("/recover-account", recoverAccount);
 
-authRouter.post("/delete-account", authToken, deleteAccount);
+authRouter.post("/delete-account", authToken, isAdminOrAuthor, deleteAccount);
 
 authRouter.post("/verify", isAdmin);
 
 module.exports = authRouter;
+

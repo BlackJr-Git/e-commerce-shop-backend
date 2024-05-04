@@ -41,8 +41,10 @@ async function getOneUserByEmail(req, res) {
       },
     });
 
+    const { password, role, ...userInfo } = user;
+
     if (user.email) {
-      return res.send(user);
+      return res.send(userInfo);
     }
     return res
       .status(404)

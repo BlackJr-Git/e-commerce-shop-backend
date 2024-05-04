@@ -9,6 +9,7 @@ const {
   searchProducts,
 } = require("../controllers/productcontroller.js");
 const authToken  = require("../middlewares/auth");
+const isAdmin = require("../middlewares/isAdmin");
 
 const productRouter = Router();
 
@@ -22,15 +23,15 @@ productRouter.get(`/search`, searchProducts);
 productRouter.get(`/:productId`, getOneProduct);
 
 //Create a new Product
-productRouter.post(`/add`,authToken, createProduct);
+productRouter.post(`/add`,authToken,isAdmin, createProduct);
 
 //Update Product by ProductId
-productRouter.put(`/update/:productId`,authToken,  updateProduct);
+productRouter.put(`/update/:productId`,authToken, isAdmin,  updateProduct);
 
 //Delete Product by ProductId
-productRouter.delete(`/delete/:productId`,authToken, deleteProduct);
+productRouter.delete(`/delete/:productId`,authToken, isAdmin, deleteProduct);
 
 //Delete all Products
-productRouter.delete(`/delete`,authToken, deleteAllProducts);
+productRouter.delete(`/delete`,authToken,isAdmin, deleteAllProducts);
 
 module.exports = productRouter;
