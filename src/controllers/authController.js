@@ -83,7 +83,7 @@ async function signin(req, res, next) {
         });
         return res.send({
           user: userInfo,
-          // token: token,
+          token: token,
         });
       } else {
         return res
