@@ -39,7 +39,7 @@ async function getAllMessages(req, res) {
     const messages = await Message.findMany({
       skip,
       take: pageSize,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "desc" }, 
     });
     return res.send({
       messages,
