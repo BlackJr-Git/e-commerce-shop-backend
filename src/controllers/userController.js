@@ -119,9 +119,9 @@ async function createUser(req, res, next) {
 
     const newUser = await User.create({ data: user });
 
-    const { password, role, ...user } = newUser;
+    const { password, role, ...userInfo } = newUser;
 
-    return res.send(user);
+    return res.send(userInfo);
   } catch (error) {
     console.log(error);
     return res

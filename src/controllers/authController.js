@@ -75,12 +75,12 @@ async function signin(req, res, next) {
         const { role, ...userInfo } = userPayload;
 
         // res.setHeader('Authorization', `Bearer ${token}`);
-        res.cookie("token", token, {
-          // httpOnly: true,
-          secure: true, 
-          sameSite: "none",
-          maxAge: 24 * 60 * 60 * 1000,
-        });
+        // res.cookie("token", token, {
+        //   // httpOnly: true,
+        //   // secure: true, 
+        //   sameSite: "none",
+        //   maxAge: 24 * 60 * 60 * 1000,
+        // });
         return res.send({
           user: userInfo,
           token: token,

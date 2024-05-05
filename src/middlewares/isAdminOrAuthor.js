@@ -6,10 +6,11 @@ async function isAdminOrAuthor(req, res, next) {
   const { userId } = req.params;
   try {
     const token = req.cookies.token;
+
     const userPayloads = jwt.verify(token, process.env.SECRET_PRIVATE_KEY);
     req.payload = userPayloads;
 
-    if (req.payload.role === "admin" || req.payload.id === userId) {
+    if (req.payload.role === "admin" || req.payload.id == userId) {
       return next();
     }
 
