@@ -77,7 +77,7 @@ async function signin(req, res, next) {
         // res.setHeader('Authorization', `Bearer ${token}`);
         res.cookie("token", token, {
           // httpOnly: true,
-          // sameSite: "strict",
+          sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000,
         });
         return res.send({
