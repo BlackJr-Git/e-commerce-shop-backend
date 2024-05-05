@@ -71,7 +71,7 @@ async function searchProductsByCategory(req, res) {
   try {
     const products = await Product.findMany({
       where: {
-        Categories : {
+        Categories: {
           startsWith: category,
           mode: "insensitive",
         },
@@ -99,9 +99,16 @@ async function getAllProducts(req, res) {
   let { number, pages, name } = req.query;
 
   try {
+    const totalProducts = await Product.count();
     const pageSize = parseInt(number, 10) || 10;
     const currentPage = parseInt(pages, 10) || 1;
-    const skip = (currentPage - 1) * pageSize;
+    let skip = (currentPage - 1) * pageSize;
+
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
+    if (currentPage > totalPages) {
+      skip = (totalPages - 1) * pageSize;
+    }
 
     let products = await Product.findMany({
       skip,
@@ -113,7 +120,6 @@ async function getAllProducts(req, res) {
         },
       },
     });
-    const totalProducts = await Product.count();
 
     return res.send({
       products,

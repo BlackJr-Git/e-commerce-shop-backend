@@ -46,25 +46,28 @@ async function getOneOrder(req, res) {
   --------------------------
 */
 async function getAllOrders(req, res) {
-  let { number, pages } = req.query;
+  let { number, pages, status } = req.query;
 
   try {
     const pageSize = parseInt(number, 10) || 10;
     const currentPage = parseInt(pages, 10) || 1;
-    const skip = (currentPage - 1) * pageSize;
+    let skip = (currentPage - 1) * pageSize;
 
-    let orders = await Order.findMany({
+    let queryConditions = {
       skip,
       take: pageSize,
-      orderBy: {
-        createdAt: "desc",
-      },
-      include: { orderItems: true,  user: true },
-    });
+      orderBy: { createdAt: "desc" },
+      include: { orderItems: true, user: true },
+    };
 
-    // orders = orders.reverse();
+    if (status && status !== "undefined" && status !== "all") {
+      queryConditions.where = { status };
+    }
 
-    const totalOrders = await Order.count();
+    const [orders, totalOrders] = await Promise.all([
+      Order.findMany(queryConditions),
+      Order.count({ where: queryConditions.where }),
+    ]);
 
     return res.send({
       orders,
